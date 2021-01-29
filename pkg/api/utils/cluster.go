@@ -134,7 +134,7 @@ func NeedsUpdate(name string, clientset simple.Clientset) (bool, error) {
 		ValidateTickDuration:    30 * time.Second,
 		ValidateSuccessDuration: 10 * time.Second,
 	}
-	err = d.AdjustNeedUpdate(groups, kc, list)
+	err = d.AdjustNeedUpdate(groups, list)
 	if err != nil {
 		return false, err
 	}

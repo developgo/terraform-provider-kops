@@ -23,9 +23,11 @@ func ResourceInstanceGroup() *schema.Resource {
 			"root_volume_size":                  OptionalInt(),
 			"root_volume_type":                  OptionalString(),
 			"root_volume_iops":                  OptionalInt(),
+			"root_volume_throughput":            OptionalInt(),
 			"root_volume_optimization":          OptionalBool(),
 			"root_volume_delete_on_termination": OptionalBool(),
 			"root_volume_encryption":            OptionalBool(),
+			"root_volume_encryption_key":        OptionalString(),
 			"volumes":                           OptionalList(kopsschemas.ResourceVolumeSpec()),
 			"volume_mounts":                     OptionalList(kopsschemas.ResourceVolumeMountSpec()),
 			"subnets":                           RequiredList(String()),
@@ -52,6 +54,8 @@ func ResourceInstanceGroup() *schema.Resource {
 			"sysctl_parameters":                 OptionalList(String()),
 			"rolling_update":                    OptionalStruct(kopsschemas.ResourceRollingUpdate()),
 			"instance_interruption_behavior":    OptionalString(),
+			"compress_user_data":                OptionalBool(),
+			"instance_metadata":                 OptionalStruct(kopsschemas.ResourceInstanceMetadataOptions()),
 		},
 	}
 }

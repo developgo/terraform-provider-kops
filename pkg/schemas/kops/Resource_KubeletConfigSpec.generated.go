@@ -93,6 +93,9 @@ func ResourceKubeletConfigSpec() *schema.Resource {
 			"rotate_certificates":                    OptionalBool(),
 			"protect_kernel_defaults":                OptionalBool(),
 			"cgroup_driver":                          OptionalString(),
+			"housekeeping_interval":                  OptionalDuration(),
+			"event_qps":                              OptionalInt(),
+			"event_burst":                            OptionalInt(),
 		},
 	}
 }
@@ -867,6 +870,54 @@ func ExpandResourceKubeletConfigSpec(in map[string]interface{}) kops.KubeletConf
 		CgroupDriver: func(in interface{}) string {
 			return string(ExpandString(in))
 		}(in["cgroup_driver"]),
+		HousekeepingInterval: func(in interface{}) *v1.Duration {
+			if reflect.DeepEqual(in, reflect.Zero(reflect.TypeOf(in)).Interface()) {
+				return nil
+			}
+			return func(in interface{}) *v1.Duration {
+				if in == nil {
+					return nil
+				}
+				if _, ok := in.([]interface{}); ok && len(in.([]interface{})) == 0 {
+					return nil
+				}
+				return func(in v1.Duration) *v1.Duration {
+					return &in
+				}(ExpandDuration(in))
+			}(in)
+		}(in["housekeeping_interval"]),
+		EventQPS: func(in interface{}) *int32 {
+			if reflect.DeepEqual(in, reflect.Zero(reflect.TypeOf(in)).Interface()) {
+				return nil
+			}
+			return func(in interface{}) *int32 {
+				if in == nil {
+					return nil
+				}
+				if _, ok := in.([]interface{}); ok && len(in.([]interface{})) == 0 {
+					return nil
+				}
+				return func(in int32) *int32 {
+					return &in
+				}(int32(ExpandInt(in)))
+			}(in)
+		}(in["event_qps"]),
+		EventBurst: func(in interface{}) *int32 {
+			if reflect.DeepEqual(in, reflect.Zero(reflect.TypeOf(in)).Interface()) {
+				return nil
+			}
+			return func(in interface{}) *int32 {
+				if in == nil {
+					return nil
+				}
+				if _, ok := in.([]interface{}); ok && len(in.([]interface{})) == 0 {
+					return nil
+				}
+				return func(in int32) *int32 {
+					return &in
+				}(int32(ExpandInt(in)))
+			}(in)
+		}(in["event_burst"]),
 	}
 }
 
@@ -1420,6 +1471,36 @@ func FlattenResourceKubeletConfigSpecInto(in kops.KubeletConfigSpec, out map[str
 	out["cgroup_driver"] = func(in string) interface{} {
 		return FlattenString(string(in))
 	}(in.CgroupDriver)
+	out["housekeeping_interval"] = func(in *v1.Duration) interface{} {
+		return func(in *v1.Duration) interface{} {
+			if in == nil {
+				return nil
+			}
+			return func(in v1.Duration) interface{} {
+				return FlattenDuration(in)
+			}(*in)
+		}(in)
+	}(in.HousekeepingInterval)
+	out["event_qps"] = func(in *int32) interface{} {
+		return func(in *int32) interface{} {
+			if in == nil {
+				return nil
+			}
+			return func(in int32) interface{} {
+				return FlattenInt(int(in))
+			}(*in)
+		}(in)
+	}(in.EventQPS)
+	out["event_burst"] = func(in *int32) interface{} {
+		return func(in *int32) interface{} {
+			if in == nil {
+				return nil
+			}
+			return func(in int32) interface{} {
+				return FlattenInt(int(in))
+			}(*in)
+		}(in)
+	}(in.EventBurst)
 }
 
 func FlattenResourceKubeletConfigSpec(in kops.KubeletConfigSpec) map[string]interface{} {
